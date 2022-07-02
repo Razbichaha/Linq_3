@@ -78,14 +78,14 @@ namespace Linq_3
             Console.Write("Введите болезнь_ ");
             string disease = InputDisease();
 
-            var patient = from Patient in _hospital where Patient.Disease == disease select Patient;
+            var hospital = from Patient in _hospital where Patient.Disease == disease select Patient;
 
-            foreach (var item in patient)
+            foreach (Patient patient in hospital)
             {
-                ShowPatient(item);
+                ShowPatient(patient);
             }
 
-            if (patient.Count() == 0)
+            if (hospital.Count() == 0)
             {
                 Console.WriteLine("Больные с данной болезнью отсутствуют");
             }
