@@ -8,17 +8,20 @@ namespace Linq_3
     {
         static void Main(string[] args)
         {
-            ProgramCore programCore = new();
-            programCore.Start();
+            Hospital hospital = new();
+            hospital.Start();
             Console.ReadLine();
         }
     }
 
-    class ProgramCore
+    class Hospital
     {
-        private List<Patient> _hospital = new List<Patient>();
+        private string[] _disease = { "Сонная лихорадка", "Морское легкое", "Смертельная гниль", "Сонная лихорадка",
+                                  "Планарная подагра","Телесное безумие","Планарная подагра","Мясной осадок","Морское легкое","Ведьмин грипп",
+                                 "Драконий кашель","Дриадская чесотка","Элементальная оспа","Гоблошоблы","Кровяная ржавчина"};
+        private List<Patient> _patients = new List<Patient>();
 
-        internal ProgramCore()
+        internal Hospital()
         {
             GenerateHospital();
         }
@@ -44,17 +47,17 @@ namespace Linq_3
                         break;
                     case ConsoleKey.Y:
 
-                        SortedByYaers();
+                        SortByYaers();
 
                         break;
                     case ConsoleKey.N:
 
-                        SortedByLastName();
+                        SortByLastName();
 
                         break;
                     case ConsoleKey.D:
 
-                        ShowDisease();
+                        ShowDiseased();
 
                         break;
                     case ConsoleKey.A:
@@ -71,14 +74,14 @@ namespace Linq_3
             }
         }
 
-        private void ShowDisease()
+        private void ShowDiseased()
         {
             Console.Clear();
             ShowDiseaseName();
             Console.Write("Введите болезнь_ ");
-            string disease = InputDisease();
+            string disease = GetDisease();
 
-            var hospital = from Patient in _hospital where Patient.Disease == disease select Patient;
+            var hospital = from Patient in _patients where Patient.Disease == disease select Patient;
 
             foreach (Patient patient in hospital)
             {
@@ -91,7 +94,7 @@ namespace Linq_3
             }
         }
 
-        private string InputDisease()
+        private string GetDisease()
         {
             bool continueInput = true;
             string inputPlaer = "";
@@ -100,7 +103,7 @@ namespace Linq_3
             {
                 inputPlaer = Console.ReadLine();
 
-                if (_hospital[0].IsDisaese(inputPlaer))
+                if (IsDisaese(inputPlaer))
                 {
                     continueInput = false;
                 }
@@ -112,31 +115,31 @@ namespace Linq_3
             return inputPlaer;
         }
 
-        private void SortedByYaers()
+        private void SortByYaers()
         {
-            var sortedLastName = from Patient in _hospital orderby Patient.Yaers select Patient;
-            _hospital = sortedLastName.ToList();
+            var sortedLastName = from Patient in _patients orderby Patient.Yaers select Patient;
+            _patients = sortedLastName.ToList();
 
             ShowAllPatient();
         }
 
-        private void SortedByLastName()
+        private void SortByLastName()
         {
-            var sortedLastName = from Patient in _hospital orderby Patient.FullName select Patient;
-            _hospital = sortedLastName.ToList();
+            var sortedLastName = from Patient in _patients orderby Patient.FullName select Patient;
+            _patients = sortedLastName.ToList();
 
             ShowAllPatient();
         }
 
         private void ShowDiseaseName()
         {
-            string[] disease = _hospital[0].Getdisease();
+            int diseasesInRow = 3;
             int count = 0;
 
-            foreach (string item in disease)
+            foreach (string diseas in _disease)
             {
-                Console.Write(item + ", ");
-                if (count == 3)
+                Console.Write(diseas + ", ");
+                if (count == diseasesInRow)
                 {
                     Console.WriteLine();
                     count = 0;
@@ -146,11 +149,26 @@ namespace Linq_3
             Console.WriteLine();
         }
 
+        private bool IsDisaese(string disease)
+        {
+            bool thereIsDisaese = false;
+
+            foreach (string diseasTemp in _disease)
+            {
+                if (disease == diseasTemp)
+                {
+                    thereIsDisaese = true;
+                    break;
+                }
+            }
+            return thereIsDisaese;
+        }
+
         private void ShowAllPatient()
         {
             Console.Clear();
 
-            foreach (Patient patient in _hospital)
+            foreach (Patient patient in _patients)
             {
                 ShowPatient(patient);
             }
@@ -175,57 +193,30 @@ namespace Linq_3
 
         private void GenerateHospital()
         {
+
             int quantityPatient = 30;
             for (int i = 0; i < quantityPatient; i++)
             {
-                Patient patient = new Patient();
-                _hospital.Add(patient);
+                Random random = new();
+                string disease = _disease[random.Next(_disease.Length)];
+
+                Patient patient = new Patient(disease);
+                _patients.Add(patient);
             }
         }
     }
 
     class Patient
     {
-        string[] _disease = { "Сонная лихорадка", "Морское легкое", "Смертельная гниль", "Сонная лихорадка",
-                                  "Планарная подагра","Телесное безумие","Планарная подагра","Мясной осадок","Морское легкое","Ведьмин грипп",
-                                 "Драконий кашель","Дриадская чесотка","Элементальная оспа","Гоблошоблы","Кровяная ржавчина"};
-
         internal string FullName { get; private set; }
         internal int Yaers { get; private set; }
         internal string Disease { get; private set; }
 
-
-        internal Patient()
+        internal Patient(string disease)
         {
             GenerateFullName();
             GenerateYaers();
-            GenerateDisease();
-        }
-
-        internal string[] Getdisease()
-        {
-            string[] disease = new string[_disease.Length];
-
-            for (int i = 0; i < disease.Length; i++)
-            {
-                disease[i] = _disease[i];
-            }
-            return disease;
-        }
-
-        internal bool IsDisaese(string disease)
-        {
-            bool thereIsDisaese = false;
-
-            foreach (string diseasTemp in _disease)
-            {
-                if (disease == diseasTemp)
-                {
-                    thereIsDisaese = true;
-                    break;
-                }
-            }
-            return thereIsDisaese;
+            Disease = disease;
         }
 
         private void GenerateFullName()
@@ -255,12 +246,6 @@ namespace Linq_3
             int minimumYaers = 14;
             int maximumYaers = 90;
             Yaers = random.Next(minimumYaers, maximumYaers);
-        }
-
-        private void GenerateDisease()
-        {
-            Random random = new();
-            Disease = _disease[random.Next(_disease.Length)];
         }
     }
 }
