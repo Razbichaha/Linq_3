@@ -100,7 +100,7 @@ namespace Linq_3
             {
                 inputPlaer = Console.ReadLine();
 
-                if (_hospital[0].ThereIsDisaese(inputPlaer))
+                if (_hospital[0].IsDisaese(inputPlaer))
                 {
                     continueInput = false;
                 }
@@ -213,13 +213,13 @@ namespace Linq_3
             return disease;
         }
 
-        internal bool ThereIsDisaese(string disease)
+        internal bool IsDisaese(string disease)
         {
             bool thereIsDisaese = false;
 
-            foreach (string item in _disease)
+            foreach (string diseasTemp in _disease)
             {
-                if (disease == item)
+                if (disease == diseasTemp)
                 {
                     thereIsDisaese = true;
                     break;
